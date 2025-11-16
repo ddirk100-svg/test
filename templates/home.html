@@ -9,8 +9,8 @@
 <body>
     <div class="container">
         <div class="home-section">
-            <h1 class="logo">📰 뉴스 AI 요약 v2.0</h1>
-<p class="subtitle">궁금한 키워드를 검색하면 AI가 뉴스를 한 문장으로 요약해드립니다 ⚡</p>
+            <h1 class="logo">📰 뉴스 AI 요약 v2.1</h1>
+            <p class="subtitle">궁금한 키워드를 검색하면 뉴스 기사와 AI요약을 확인하실 수 있습니다.</p>
             
             {% if error %}
             <div class="error-message">
@@ -18,7 +18,7 @@
             </div>
             {% endif %}
             
-            <form action="/search" method="get" class="search-form">
+            <form action="/search" method="get" class="search-form" id="searchForm">
                 <div class="search-box">
                     <input 
                         type="text" 
@@ -26,10 +26,14 @@
                         placeholder="예: AI, 경제, 날씨, 스포츠..." 
                         required
                         class="search-input"
+                        id="searchInput"
                         autofocus
                     >
-                    <button type="submit" class="search-button">
-                        🔍 검색
+                    <button type="submit" class="search-button" id="searchButton">
+                        <span class="button-text">🔍 검색</span>
+                        <span class="button-loading" style="display: none;">
+                            <span class="spinner"></span> 검색 중...
+                        </span>
                     </button>
                 </div>
             </form>
@@ -49,6 +53,26 @@
     <footer>
         <p>Powered by Naver News API & OpenAI GPT-4o-mini</p>
     </footer>
+    
+    <script>
+        // 검색 폼 로딩 처리
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            const button = document.getElementById('searchButton');
+            const buttonText = button.querySelector('.button-text');
+            const buttonLoading = button.querySelector('.button-loading');
+            const input = document.getElementById('searchInput');
+            
+            // 버튼 비활성화
+            button.disabled = true;
+            input.disabled = true;
+            
+            // 로딩 표시
+            buttonText.style.display = 'none';
+            buttonLoading.style.display = 'inline-flex';
+            buttonLoading.style.alignItems = 'center';
+            buttonLoading.style.gap = '8px';
+        });
+    </script>
 </body>
 </html>
 
