@@ -5,11 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>네이버 뉴스 AI 요약 서비스</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
 </head>
 <body>
     <div class="container">
         <div class="home-section">
-            <h1 class="logo">📰 뉴스 AI 요약 v2.1</h1>
+            <div class="header-with-auth">
+                <h1 class="logo">📰 뉴스 AI 요약 v3.0</h1>
+                <div class="auth-buttons">
+                    {% if session.user_id %}
+                    <!-- 로그인 상태 -->
+                    <span class="user-email">👤 {{ session.user_email }}</span>
+                    <a href="/favorites" class="favorites-link" title="내 즐겨찾기">
+                        📚 즐겨찾기
+                    </a>
+                    <a href="/logout" class="logout-link" title="로그아웃">
+                        🚪 로그아웃
+                    </a>
+                    {% else %}
+                    <!-- 로그아웃 상태 -->
+                    <a href="/login" class="login-link">
+                        🔐 로그인
+                    </a>
+                    <a href="/register" class="register-link">
+                        ✨ 회원가입
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
             <p class="subtitle">궁금한 키워드를 검색하면 뉴스 기사와 AI요약을 확인하실 수 있습니다.</p>
             
             {% if error %}
@@ -36,13 +59,35 @@
                         </span>
                     </button>
                 </div>
+                
+                <!-- 뉴스 개수 슬라이더 -->
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">표시할 기사 개수</span>
+                        <span class="slider-value" id="displayValue">5개</span>
+                    </div>
+                    <input 
+                        type="range" 
+                        name="display" 
+                        min="1" 
+                        max="10" 
+                        value="5" 
+                        class="news-slider"
+                        id="newsSlider"
+                    >
+                    <div class="slider-range">
+                        <span>1개</span>
+                        <span>5개</span>
+                        <span>10개</span>
+                    </div>
+                </div>
             </form>
             
             <div class="info-section">
                 <h3>💡 이용 방법</h3>
                 <ul>
                     <li>관심있는 키워드를 검색창에 입력하세요</li>
-                    <li>네이버에서 최신 뉴스 5개를 가져옵니다</li>
+                    <li>네이버에서 관련도 높은 뉴스 기사를 가져옵니다</li>
                     <li>GPT-4o가 각 뉴스를 한 문장으로 요약합니다</li>
                     <li>카드를 클릭하면 전체 기사를 볼 수 있습니다</li>
                 </ul>
@@ -55,21 +100,33 @@
     </footer>
     
     <script>
+        // 캐시 방지 (뒤로가기 대응)
+        preventCacheOnPageShow();
+
+        // 슬라이더 값 업데이트
+        const slider = document.getElementById('newsSlider');
+        const displayValue = document.getElementById('displayValue');
+        
+        slider.addEventListener('input', function() {
+            displayValue.textContent = this.value + '개';
+        });
+        
         // 검색 폼 로딩 처리
-        document.getElementById('searchForm').addEventListener('submit', function(e) {
-            const button = document.getElementById('searchButton');
-            const buttonText = button.querySelector('.button-text');
-            const buttonLoading = button.querySelector('.button-loading');
-            const input = document.getElementById('searchInput');
-            
+        const searchForm = document.getElementById('searchForm');
+        const searchButton = document.getElementById('searchButton');
+        const searchButtonText = searchButton.querySelector('.button-text');
+        const searchButtonLoading = searchButton.querySelector('.button-loading');
+        const searchInput = document.getElementById('searchInput');
+        
+        searchForm.addEventListener('submit', function(e) {
             // 로딩 표시 (form submit은 계속 진행됨)
             setTimeout(function() {
-                button.disabled = true;
-                input.readOnly = true;
-                buttonText.style.display = 'none';
-                buttonLoading.style.display = 'inline-flex';
-                buttonLoading.style.alignItems = 'center';
-                buttonLoading.style.gap = '8px';
+                searchButton.disabled = true;
+                searchInput.readOnly = true;
+                searchButtonText.style.display = 'none';
+                searchButtonLoading.style.display = 'inline-flex';
+                searchButtonLoading.style.alignItems = 'center';
+                searchButtonLoading.style.gap = '8px';
             }, 0);
         });
     </script>

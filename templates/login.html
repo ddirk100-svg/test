@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 뉴스 AI 요약</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-section">
+            <h1 class="auth-logo">🔐 로그인</h1>
+            <p class="auth-subtitle">뉴스 AI 요약 서비스에 로그인하세요</p>
+            
+            {% if error %}
+            <div class="error-message">
+                ⚠️ {{ error }}
+            </div>
+            {% endif %}
+            
+            {% if success %}
+            <div class="success-message">
+                ✅ {{ success }}
+            </div>
+            {% endif %}
+            
+            <form action="/login" method="post" class="auth-form">
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="example@email.com"
+                        required
+                        autofocus
+                        class="form-input"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="비밀번호를 입력하세요"
+                        required
+                        class="form-input"
+                    >
+                </div>
+                
+                <button type="submit" class="auth-button">
+                    로그인
+                </button>
+            </form>
+            
+            <div class="auth-links">
+                <p>아직 계정이 없으신가요?</p>
+                <a href="/register" class="link-button">회원가입하기</a>
+            </div>
+            
+            <div class="auth-links">
+                <a href="/" class="link-button secondary">← 홈으로 돌아가기</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Powered by Naver News API & OpenAI GPT-4o-mini</p>
+    </footer>
+</body>
+</html>
+

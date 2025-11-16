@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 완료 - 뉴스 AI 요약</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-section">
+            <h1 class="auth-logo">✅ 회원가입 완료!</h1>
+            
+            <div class="success-message">
+                <h3 style="margin-bottom: 15px;">📧 이메일을 확인해주세요!</h3>
+                <p style="line-height: 1.8; color: #155724;">
+                    <strong>{{ email }}</strong> 주소로<br>
+                    확인 이메일이 전송되었습니다.<br><br>
+                    이메일의 <strong>"확인 링크"</strong>를 클릭하셔야<br>
+                    회원가입이 최종 완료됩니다.
+                </p>
+            </div>
+            
+            <div class="info-box">
+                <h4>📌 다음 단계</h4>
+                <ol style="text-align: left; line-height: 2; padding-left: 25px;">
+                    <li>이메일 받은편지함 확인</li>
+                    <li>확인 링크 클릭 (이메일 인증)</li>
+                    <li>로그인하여 서비스 이용</li>
+                </ol>
+                <p style="font-size: 0.85rem; color: #999; margin-top: 15px;">
+                    💡 이메일이 오지 않았다면 스팸함을 확인해주세요.
+                </p>
+            </div>
+            
+            <div class="auth-links">
+                <a href="/login" class="link-button">로그인 페이지로 이동</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Powered by Naver News API & OpenAI GPT-4o-mini</p>
+    </footer>
+</body>
+</html>
+

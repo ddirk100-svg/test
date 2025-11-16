@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ keyword }} - 뉴스 검색 결과</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
 </head>
 <body>
     <div class="container">
@@ -26,23 +27,34 @@
             <div class="news-card">
                 <div class="card-header">
                     <h2 class="news-title">{{ item.title | safe }}</h2>
+                    <button 
+                        onclick="toggleFavorite(this, '{{ item.title | safe | replace("'", "\\'") }}', '{{ item.description | safe | replace("'", "\\'") }}', '{{ item.summary | replace("'", "\\'") }}', '{{ item.link }}')" 
+                        class="favorite-button"
+                        data-link="{{ item.link }}"
+                        title="즐겨찾기"
+                    >
+                        <span class="star-icon">☆</span>
+                    </button>
                 </div>
                 
                 <div class="card-body">
-                    <div class="section">
-                        <span class="label">📄 원문 미리보기</span>
-                        <p class="news-description">{{ item.description | safe }}</p>
-                    </div>
-                    
                     <div class="section ai-summary">
                         <span class="label">🤖 AI 요약</span>
                         <p class="summary-text">{{ item.summary }}</p>
                     </div>
                     
+                    <div class="section">
+                        <span class="label">📄 원문 미리보기</span>
+                        <p class="news-description">{{ item.description | safe }}</p>
+                    </div>
+                    
                     <div class="card-footer">
                         <a href="{{ item.link }}" target="_blank" class="read-more-button">
-                            전체 기사 보기 →
+                            📰 기사 보기
                         </a>
+                        <button onclick="shareArticle('{{ item.link }}', '{{ item.title | safe | replace("'", "\\'") }}')" class="share-button">
+                            🔗 공유
+                        </button>
                     </div>
                 </div>
             </div>
@@ -63,6 +75,108 @@
     <footer>
         <p>Powered by Naver News API & OpenAI GPT-4o-mini</p>
     </footer>
+    
+    <script>
+        // 페이지 로드 시 즐겨찾기 상태 확인
+        async function checkFavoriteStatus() {
+            
+            try {
+                const response = await fetch('/favorites');
+                const text = await response.text();
+                
+                // HTML 파싱하여 즐겨찾기 링크 추출
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                
+                // 모든 즐겨찾기 링크를 Set으로 저장
+                const favoriteLinks = new Set();
+                doc.querySelectorAll('.news-card').forEach(card => {
+                    const link = card.querySelector('.read-more-button')?.href;
+                    if (link) favoriteLinks.add(link);
+                });
+                
+                // 현재 페이지의 버튼 상태 업데이트
+                document.querySelectorAll('.favorite-button').forEach(button => {
+                    const link = button.getAttribute('data-link');
+                    if (favoriteLinks.has(link)) {
+                        const starIcon = button.querySelector('.star-icon');
+                        if (starIcon) {
+                            starIcon.textContent = '⭐';
+                            starIcon.classList.add('favorited');
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('즐겨찾기 상태 확인 오류:', error);
+            }
+        }
+
+        // 즐겨찾기 토글 (추가/제거)
+        async function toggleFavorite(button, title, description, summary, link) {
+            const starIcon = button.querySelector('.star-icon');
+            const isFavorited = starIcon.classList.contains('favorited');
+            
+            // HTML 엔티티 디코딩
+            const parser = new DOMParser();
+            const decodedTitle = parser.parseFromString(title, 'text/html').body.textContent;
+            const decodedDescription = parser.parseFromString(description, 'text/html').body.textContent;
+            
+            try {
+                if (isFavorited) {
+                    // 즐겨찾기 제거
+                    const response = await fetch('/api/favorites/remove', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            link: link
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        starIcon.textContent = '☆';
+                        starIcon.classList.remove('favorited');
+                        alert('즐겨찾기에서 제거되었습니다.');
+                    } else {
+                        alert(data.message || '제거에 실패했습니다.');
+                    }
+                } else {
+                    // 즐겨찾기 추가
+                    const response = await fetch('/api/favorites/add', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title: decodedTitle,
+                            description: decodedDescription,
+                            summary: summary,
+                            link: link
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        starIcon.textContent = '⭐';
+                        starIcon.classList.add('favorited');
+                        alert('⭐ 즐겨찾기에 추가되었습니다!');
+                    } else {
+                        alert(data.message || '즐겨찾기 추가에 실패했습니다.');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다: ' + error.message);
+            }
+        }
+
+        // 페이지 로드 시 즐겨찾기 상태 확인
+        window.addEventListener('DOMContentLoaded', checkFavoriteStatus);
+    </script>
 </body>
 </html>
 
