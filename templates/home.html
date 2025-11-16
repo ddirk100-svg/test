@@ -62,15 +62,15 @@
             const buttonLoading = button.querySelector('.button-loading');
             const input = document.getElementById('searchInput');
             
-            // 버튼 비활성화
-            button.disabled = true;
-            input.disabled = true;
-            
-            // 로딩 표시
-            buttonText.style.display = 'none';
-            buttonLoading.style.display = 'inline-flex';
-            buttonLoading.style.alignItems = 'center';
-            buttonLoading.style.gap = '8px';
+            // 로딩 표시 (form submit은 계속 진행됨)
+            setTimeout(function() {
+                button.disabled = true;
+                input.readOnly = true;
+                buttonText.style.display = 'none';
+                buttonLoading.style.display = 'inline-flex';
+                buttonLoading.style.alignItems = 'center';
+                buttonLoading.style.gap = '8px';
+            }, 0);
         });
     </script>
 </body>
