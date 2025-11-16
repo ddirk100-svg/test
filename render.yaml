@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: naver-news-summary
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: CLIENT_ID
+        sync: false
+      - key: CLIENT_SECRET
+        sync: false
+      - key: OPENAI_KEY
+        sync: false
+
